@@ -24,6 +24,14 @@ describe CoreGame do
 
   it 'allows players to make movements' do
     game.move(0, 0)
+
+    expect(game.state).to eq 'on-progress'
+    expect(game.board).to eq ([
+      ['X', '', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ])
+
     game.move(0, 1)
 
     expect(game.movements).to have(2).items
