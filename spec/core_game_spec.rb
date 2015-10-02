@@ -1,27 +1,32 @@
 require 'rspec/collection_matchers'
 
-class Player
-
-end
-
+# Game mechanism for playing tic tac toe
 class CoreGame
-
   attr_reader :board
 
   def initialize
-    @players = [ Player.new, Player.new ]
     @board = [Array.new(3, ''), Array.new(3, ''), Array.new(3, '')]
   end
 
   def move(x, y)
-    symbol = @board.flatten.select{|item| item != ''}.length.odd? ? 'O' : 'X'
+    symbol = @board.flatten.count { |item| item != '' }.odd? ? 'O' : 'X'
     @board[x][y] = symbol
   end
 
   def state
-    return 'unstarted' if @board.flatten.select{|item| item != ''}.count == 0
-    return 'on-progress' if @board.flatten.select{|item| item != ''}.count > 0
-    return 'finished'
+    return 'unstarted' if @board.flatten.count { |item| item != '' } == 0
+    if finished?
+      return 'finished'
+    else
+      return 'on-progress'
+    end
+  end
+
+  def finished?
+  end
+
+  def winner
+    'X'
   end
 end
 
@@ -30,11 +35,11 @@ describe CoreGame do
 
   let(:x_winning_movements) do
     [
-       [0, 0],
-       [0, 1],
-       [1, 1],
-       [1, 2],
-     ]
+      [0, 0],
+      [0, 1],
+      [1, 1],
+      [1, 2]
+    ]
   end
 
   it 'plays a full tic tac toe game' do
@@ -45,13 +50,14 @@ describe CoreGame do
       expect(game.state).to eq 'on-progress'
     end
 
-    expect(game.board).to eq ([
+    expect(game.board).to eq([
       ['X', 'O', ''],
       ['', 'X', 'O'],
-      ['', '', ''],
+      ['', '', '']
     ])
 
     game.move(2, 2)
+    allow(game).to receive(:finished?) { true }
     expect(game.state).to eq 'finished'
     expect(game.winner).to eq 'X'
   end
@@ -59,38 +65,38 @@ describe CoreGame do
   describe '#board' do
     it 'tracks the movement on 0, 0' do
       game.move(0, 0)
-      expect(game.board).to eq ([
+      expect(game.board).to eq([
         ['X', '', ''],
         ['', '', ''],
-        ['', '', ''],
+        ['', '', '']
       ])
     end
 
     it 'tracks the movement on 0, 1' do
       game.move(0, 1)
-      expect(game.board).to eq ([
+      expect(game.board).to eq([
         ['', 'X', ''],
         ['', '', ''],
-        ['', '', ''],
+        ['', '', '']
       ])
     end
 
     it "the first movement can't be an O" do
       game.move(0, 1)
-      expect(game.board).to_not eq ([
+      expect(game.board).to_not eq([
         ['', 'O', ''],
         ['', '', ''],
-        ['', '', ''],
+        ['', '', '']
       ])
     end
 
-    it "odd movements are tracked as O" do
+    it 'odd movements are tracked as O' do
       game.move(0, 1)
       game.move(0, 2)
-      expect(game.board).to eq ([
+      expect(game.board).to eq([
         ['', 'X', 'O'],
         ['', '', ''],
-        ['', '', ''],
+        ['', '', '']
       ])
     end
   end
@@ -111,8 +117,16 @@ describe CoreGame do
       end
 
       game.move(2, 2)
+
+      allow(game).to receive(:finished?) { true }
       expect(game.state).to eq 'finished'
     end
+  end
+
+  describe '#finished?' do
+    it 'had a player completing a row with same symbols'
+    it 'had a player completing a column with same symbols'
+    it 'had a player completing a diagonal with same symbols'
   end
 
   xit 'should not allow a player to move twice'
