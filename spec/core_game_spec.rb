@@ -1,62 +1,6 @@
 require 'rspec/collection_matchers'
 
-# Game mechanism for playing tic tac toe
-class CoreGame
-  attr_reader :board
-
-  def initialize
-    @board = [Array.new(3, ''), Array.new(3, ''), Array.new(3, '')]
-  end
-
-  def move(x, y)
-    symbol = @board.flatten.count { |item| item != '' }.odd? ? 'O' : 'X'
-    @board[x][y] = symbol
-  end
-
-  def state
-    return 'unstarted' if @board.flatten.count { |item| item != '' } == 0
-    if finished?
-      return 'finished'
-    else
-      return 'on-progress'
-    end
-  end
-
-  def finished?
-    combinations = diagonal_combinations + row_combinations
-    combinations.find { |row| similar_in_row?(row) }
-  end
-
-  def winner
-    'X'
-  end
-
-  private
-
-  def similar_in_row?(row)
-    symbols = %w( O X )
-    row.uniq.length == 1 && symbols.include?(row.first)
-  end
-
-  def diagonal_combinations
-    [
-      [@board[0][0], @board[1][1], @board[2][2]],
-      [@board[2][0], @board[1][1], @board[0][2]]
-    ]
-  end
-
-  def row_combinations
-    combinations = []
-
-    [@board, @board.transpose].each do |tmp_board|
-      2.downto(0) do |i|
-        combinations << tmp_board[i]
-      end
-    end
-
-    combinations
-  end
-end
+require_relative '../lib/core_game'
 
 describe CoreGame do
   subject(:game) { CoreGame.new }
@@ -70,23 +14,54 @@ describe CoreGame do
     ]
   end
 
-  it 'plays a full tic tac toe game' do
-    expect(game.state).to eq 'unstarted'
+  let(:o_winning_movements) do
+    [
+      [0, 1],
+      [0, 0],
+      [1, 2],
+      [1, 1],
+      [2, 1]
+    ]
+  end
 
-    x_winning_movements.each do |coords|
-      game.move(*coords)
-      expect(game.state).to eq 'on-progress'
+  describe 'full game' do
+    it 'O wins a tic tac toe game' do
+      expect(game.state).to eq 'unstarted'
+
+      o_winning_movements.each do |coords|
+        game.move(*coords)
+        expect(game.state).to eq 'on-progress'
+      end
+
+      expect(game.board).to eq([
+        ['O', 'X', ''],
+        ['', 'O', 'X'],
+        ['', 'X', '']
+      ])
+
+      game.move(2, 2)
+      expect(game.state).to eq 'finished'
+      expect(game.winner).to eq 'O'
     end
 
-    expect(game.board).to eq([
-      ['X', 'O', ''],
-      ['', 'X', 'O'],
-      ['', '', '']
-    ])
+    it 'X wins a tic tac toe game' do
+      expect(game.state).to eq 'unstarted'
 
-    game.move(2, 2)
-    expect(game.state).to eq 'finished'
-    expect(game.winner).to eq 'X'
+      x_winning_movements.each do |coords|
+        game.move(*coords)
+        expect(game.state).to eq 'on-progress'
+      end
+
+      expect(game.board).to eq([
+        ['X', 'O', ''],
+        ['', 'X', 'O'],
+        ['', '', '']
+      ])
+
+      game.move(2, 2)
+      expect(game.state).to eq 'finished'
+      expect(game.winner).to eq 'X'
+    end
   end
 
   describe '#board' do
@@ -125,6 +100,26 @@ describe CoreGame do
         ['', '', ''],
         ['', '', '']
       ])
+    end
+  end
+
+  describe '#winner' do
+    it "does not have a winner when the game hasn't started" do
+      expect(game.winner).to eq nil
+    end
+
+    it 'does not have winner when the game is on progress' do
+      game.move(1, 1)
+      expect(game.winner).to eq nil
+    end
+
+    it 'does have a winner when the game is finished' do
+      x_winning_movements.each do |coords|
+        game.move(*coords)
+      end
+
+      game.move(2, 2)
+      expect(game.winner).to eq 'X'
     end
   end
 
