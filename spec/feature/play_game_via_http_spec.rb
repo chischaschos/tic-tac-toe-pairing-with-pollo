@@ -1,13 +1,22 @@
 require 'rest_client'
+require 'rack'
+require_relative '../../lib/game_api'
 
-xdescribe 'Play game via http' do
+describe 'Play game via http' do
   let(:server_url) { 'localhost:9292' }
 
   before do
-    Rack::Server.start do
-      puts options
-      options['daemonize']
+    @pid = fork do
+      Rack::Server.start(
+        app: GameApi.new,
+        daemonize: true,
+        server: 'webrick'
+      )
     end
+  end
+
+  after do
+    `kill -9 #{@pid}`
   end
 
   it 'a user plays a game' do
