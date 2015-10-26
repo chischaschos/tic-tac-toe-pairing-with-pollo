@@ -35,15 +35,15 @@ describe 'Play game via http' do
     new_game_response = JSON.parse(response)
     expect(new_game_response['id']).to be_an(Integer)
 
-    # game_id = new_game_response['id']
-    # url = server_url + "/games/#{game_id}/moves"
-    # response = RestClient.post(url, {x: 1, y:1})
-    # new_game_response = JSON.parse(response)
-    # board = [
-    # ['', '', ''],
-    # ['', 'X', ''],
-    # ['', '', '']
-    # ]
-    # expect(new_game_response[:board]).to eq(board)
+    game_id = new_game_response['id']
+    url = server_url + "/games/#{game_id}/moves"
+    response = RestClient.post(url, x: 1, y: 1)
+    new_game_response = JSON.parse(response)
+    board = [
+      ['', '', ''],
+      ['', 'X', ''],
+      ['', '', '']
+    ]
+    expect(new_game_response['board']).to eq(board)
   end
 end

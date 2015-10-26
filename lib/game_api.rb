@@ -9,17 +9,32 @@ module GameApi
 
       app = case request.path
             when %r{\/games\/create} then GamesController.new
+            when %r{\/games\/\d+\/moves} then GameMovesController.new
             end
 
       app.call(env)
     end
   end
 
-  # GameApi::Create handles creation of games
+  # GamesController handles creation of games
   class GamesController
     def call(_env)
       response = Rack::Response.new
       response.write({ id: 1 }.to_json)
+      response.finish
+    end
+  end
+
+  # GameMovesController handles the creation of movements in a specific game
+  class GameMovesController
+    def call(_env)
+      response = Rack::Response.new
+      board = [
+        ['', '', ''],
+        ['', 'X', ''],
+        ['', '', '']
+      ]
+      response.write({ board: board }.to_json)
       response.finish
     end
   end
