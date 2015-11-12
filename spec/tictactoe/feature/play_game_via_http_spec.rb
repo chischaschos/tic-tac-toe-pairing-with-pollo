@@ -1,6 +1,6 @@
+require 'spec_helper'
 require 'rest_client'
 require 'rack'
-require_relative '../../lib/game_api'
 
 describe 'Play game via http' do
   let(:server_url) { 'localhost:8080' }
@@ -8,7 +8,7 @@ describe 'Play game via http' do
   before do
     @pid = fork do
       Rack::Server.start(
-        app: GameApi::Router.new,
+        app: Tictactoe::GameApi::Router.new,
         server: 'webrick'
       )
     end
