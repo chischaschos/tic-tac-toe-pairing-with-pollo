@@ -1,0 +1,6 @@
+# Tictactoe is application that serves tictactoe games through a restful api
+module Tictactoe
+  autoload :CoreGame, 'tictactoe/core_game'
+  autoload :Game,     'tictactoe/game'
+  autoload :GameApi,  'tictactoe/game_api'
+end

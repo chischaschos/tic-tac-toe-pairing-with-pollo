@@ -1,9 +1,7 @@
-require 'rspec/collection_matchers'
+require 'spec_helper'
 
-require_relative '../lib/core_game'
-
-describe CoreGame do
-  subject(:game) { CoreGame.new }
+describe Tictactoe::CoreGame do
+  subject(:game) { Tictactoe::CoreGame.new }
 
   let(:x_winning_movements) do
     [
