@@ -8,10 +8,22 @@ describe Tictactoe::GameApi::Router do
     Tictactoe::GameApi::Router.new
   end
 
-  describe 'creates a game' do
-    it 'success' do
-      post '/games/create'
-      expect(last_response).to be_ok
+  describe 'games endpoint' do
+    describe 'post /games' do
+      it 'success' do
+        post '/games/create'
+        expect(last_response).to be_ok
+      end
+
+      it 'returns a game id' do
+        post '/games/create'
+        response_body = JSON.parse(last_response.body)
+        expect(response_body['id']).to be_an(Integer)
+      end
+    end
+
+    describe 'get /games/:id' do
+      xit 'returns an existing game'
     end
   end
 

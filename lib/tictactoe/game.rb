@@ -6,5 +6,9 @@ module Tictactoe
     def initialize(id: nil)
       @id = id
     end
+
+    def ==(other)
+      other.id == @id
+    end
   end
 end
